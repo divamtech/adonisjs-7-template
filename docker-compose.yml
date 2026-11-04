@@ -1,0 +1,90 @@
+version: '3.1'
+services:
+  redis:
+    image: redis:6-alpine
+    platform: linux/amd64
+    restart: unless-stopped
+    container_name: redis
+    ports:
+      - '6379:6379'
+
+  postgres:
+    image: postgres:18
+    container_name: postgres
+    restart: always
+    platform: linux/amd64
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_PASSWORD: root
+    command: >
+      bash -c "
+        if [ ! -f /usr/share/postgresql/18/extension/vector.control ]; then
+          echo 'pgvector not found. Installing postgresql-18-pgvector...'
+          apt-get update && apt-get install -y postgresql-18-pgvector
+        fi
+        exec docker-entrypoint.sh postgres
+      "
+
+  # postgres:
+  #   image: postgres:18
+  #   container_name: postgres
+  #   restart: always
+  #   platform: linux/amd64
+  #   ports:
+  #     - '5432:5432'
+  #   environment:
+  #     POSTGRES_PASSWORD: root
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: "no"
+    ports:
+      - '54321:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: default@example.com
+      PGADMIN_DEFAULT_PASSWORD: qwerty
+
+  # mysql:
+  #   container_name: mysql
+  #   image: mysql:8.0.28
+  #   command: --default-authentication-plugin=mysql_native_password --sql_mode=NO_ENGINE_SUBSTITUTION
+  #   restart: always
+  #   platform: linux/amd64
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: root
+  #     MYSQL_USER: dbuser
+  #     MYSQL_PASSWORD: dbuser
+  #   ports:
+  #     - '3306:3306'
+
+  # phpmyadmin:
+  #   image: phpmyadmin/phpmyadmin:latest
+  #   restart: always
+  #   platform: linux/amd64
+  #   environment:
+  #     PMA_HOST: mysql
+  #     PMA_USER: root
+  #     PMA_PASSWORD: root
+  #   ports:
+  #     - '33036:80'
+
+  # qdrant:
+  #   image: qdrant/qdrant
+  #   container_name: qdrant
+  #   ports:
+  #     - '6333:6333' # REST
+  #     - '6334:6334' # gRPC
+  #   environment:
+  #     QDRANT__SERVICE__API_KEY: root
+  #   restart: unless-stopped
+
+  # mailhog:
+  #   image: mailhog/mailhog
+  #   container_name: mailhog
+  #   restart: "no"
+  #   ports:
+  #     - '1025:1025'
+  #     - '8025:8025'
+
