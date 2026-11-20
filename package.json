@@ -89,5 +89,10 @@
     "esbuild": true,
     "fsevents": true
   },
+  "overrides": {
+    "@acidiney/bull-queue": {
+      "@adonisjs/core": "$@adonisjs/core"
+    }
+  },
   "prettier": "@adonisjs/prettier-config"
 }
